@@ -26,6 +26,15 @@ def main():
     (train_data, test_data) = LoadData()
 
     """
+    GradientBoostingRegressor(learning_rate=0.03,
+                                      loss='huber',
+                                      max_depth=14,
+                                      max_features='sqrt',
+                                      min_samples_leaf=10,
+                                      min_samples_split=40,
+                                      n_estimators=300,
+                                      random_state=10,
+                                      subsample=0.8)
                    本地测试(mse)         线上score        时间 
     False True  0.10895188423219443      0.1682     2019.1.19 20:00
     True  True  0.11475080628985444      0.1585     2019.1.20 20:00
@@ -50,10 +59,10 @@ def main():
                                       loss='huber',
                                       max_depth=14,
                                       max_features='sqrt',
-                                      min_samples_leaf=10,
-                                      min_samples_split=40,
-                                      n_estimators=300,
-                                      random_state=10,
+                                      min_samples_leaf=25,
+                                      min_samples_split=256,
+                                      n_estimators=1000,
+                                      random_state=40,
                                       subsample=0.8)
     myGBR.fit(X_train, Y_train)
     Y_pred = myGBR.predict(X_test)
