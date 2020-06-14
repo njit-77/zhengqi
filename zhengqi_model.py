@@ -25,8 +25,23 @@ def LoadData():
 def main():
     (train_data, test_data) = LoadData()
 
-    train_data.drop(['V27'], axis=1, inplace=True)
-    test_data.drop(['V27'], axis=1, inplace=True)
+    train_data.drop(['V8', 'V27'], axis=1, inplace=True)
+    test_data.drop(['V8', 'V27'], axis=1, inplace=True)
+
+    """
+	train_data.drop(['V27'], axis=1, inplace=True)
+	test_data.drop(['V27'], axis=1, inplace=True)
+	0.08781269343785499
+
+    train_data.drop(['V8', 'V27'], axis=1, inplace=True)
+    test_data.drop(['V8', 'V27'], axis=1, inplace=True)
+	0.08834203275808454
+	    
+    train_data = train_data[['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V10', 'V13', 'V15',
+                             'V16', 'V18', 'V19', 'V20', 'V22', 'V23', 'V24', 'V30', 'V37', 'target']]
+    test_data = test_data[['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V10', 'V13', 'V15',
+                           'V16', 'V18', 'V19', 'V20', 'V22', 'V23', 'V24', 'V30', 'V37']]    
+    """
 
     train_data_x = train_data.drop(['target'], axis=1)
     train_data_y = train_data['target']
