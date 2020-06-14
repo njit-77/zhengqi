@@ -6,66 +6,51 @@
 Have a nice day!
 """
 
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.decomposition import pca
+from sklearn.ensemble import GradientBoostingRegressor
 
 TRAIN_DATA_PATH = './data/zhengqi_train.txt'
 TEST_DATA_PATH = './data/zhengqi_test.txt'
 
 
-def LoadData(dataPath):
+def LoadData():
     # load data from txt file
-    data = np.loadtxt(dataPath, dtype='float', delimiter='\t', skiprows=1)
-    data_features = data[:, :38]#提取前38列为特征数据
-    data_labels = data[:, -1]#提取最后一列为标签数据
-    return (data_features, data_labels)
-
-def NormalizeData(train_data, test_data):
-    mean = np.mean(train_data, axis=0)
-    std = np.std(train_data, axis=0)
-    return ((train_data - mean)/std, (test_data - mean)/std)
-
-def SplitData(train_fetures, train_labels):
-    # split data into train and valid data
-    train_index = np.random.choice(len(train_fetures), round(len(train_fetures) * 0.8), replace=False)
-    valid_index = np.array(list(set(range(len(train_fetures))) - set(train_index)))
-    train_data_features = train_fetures[train_index]
-    valid_data_features = train_fetures[valid_index]
-    train_data_labels = train_labels[train_index]
-    valid_data_labels = train_labels[valid_index]
-    return (train_data_features, train_data_labels), (valid_data_features, valid_data_labels)
-
-def CreataModel():
-    model = keras.Sequential([
-        keras.layers.Dense(16, activation=tf.nn.relu, input_shape=[38]),
-        layers.Dense(16, activation=tf.nn.relu),
-        layers.Dense(1)
-    ])
-    optimizer = tf.train.RMSPropOptimizer(0.001)
-    model.compile(loss='mse',
-                  optimizer=optimizer,
-                  metrics=['mae', 'mse'])
-    return model
+    train_data = pd.read_table(TRAIN_DATA_PATH)
+    test_data = pd.read_table(TEST_DATA_PATH)
+    train_data_x = train_data.values[:, 0:-1]
+    train_data_y = train_data.values[:, -1]
+    return (train_data_x, train_data_y, test_data)
 
 def main():
-    (train_fetures, train_labels) = LoadData(TRAIN_DATA_PATH)
-    (test_fetures, test_labels) = LoadData(TEST_DATA_PATH)
-    (train_fetures, test_fetures) = NormalizeData(train_fetures, test_fetures)
-    (train_data_features, train_data_labels), (valid_data_features, valid_data_labels) = SplitData(train_fetures, train_labels)
+    (train_data_x, train_data_y, test_data) = LoadData()
 
-    model = CreataModel()
+    pca1 = pca.PCA(n_components=0.95)
+    pca1.fit(train_data_x)
+    train_data_x = pca1.transform(train_data_x)
+    test_data = pca1.transform(test_data)
 
-    history = model.fit(train_data_features,
-                        train_data_labels,
-                        epochs=32,
-                        batch_size=64,
-                        validation_data=(valid_data_features, valid_data_labels),
-                        verbose=1)
+    X_train, X_test, Y_train, Y_test = train_test_split(train_data_x, train_data_y, test_size=0.2, random_state=40)
+    myGBR = GradientBoostingRegressor(alpha=0.9, criterion='friedman_mse', init=None,
+                                      learning_rate=0.03, loss='huber', max_depth=14,
+                                      max_features='sqrt', max_leaf_nodes=None,
+                                      min_impurity_decrease=0.0, min_impurity_split=None,
+                                      min_samples_leaf=10, min_samples_split=40,
+                                      min_weight_fraction_leaf=0.0, n_estimators=300,
+                                      presort='auto', random_state=10, subsample=0.8, verbose=0,
+                                      warm_start=False)
+    myGBR.fit(X_train, Y_train)
+    Y_pred = myGBR.predict(X_test)
+    print(mean_squared_error(Y_test, Y_pred))
 
-    test_predictions = model.predict(test_fetures)
-    np.savetxt('./submit/njit_77.txt', test_predictions)
+    '''结果预测'''
+    test_data_y = myGBR.predict(test_data)
+
+    res_pd = pd.DataFrame(test_data_y, columns=['target'])
+    res_pd.to_csv("./submit/njit_77.txt", index=False, header=False)
+    print("over")
 
 if __name__ == '__main__':
     main()
