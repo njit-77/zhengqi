@@ -6,7 +6,7 @@
 Have a nice day!
 """
 
-
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import pandas as pd  # 导入pandas库
@@ -21,6 +21,11 @@ def LoadData():
     train_data = pd.read_csv(TRAIN_DATA_PATH, sep='\t')
     test_data = pd.read_csv(TEST_DATA_PATH, sep='\t')
     return (train_data, test_data)
+
+def NormalizeData(train_data, test_data):
+    mean = np.mean(train_data, axis=0)
+    std = np.std(train_data, axis=0)
+    return ((train_data - mean)/std, (test_data - mean)/std)
 
 def main():
 
@@ -91,11 +96,13 @@ def main():
     if True:
         (train_data, test_data) = LoadData()
 
-        train_data.drop(["V28"], axis=1, inplace=True)
-        test_data.drop(["V28"], axis=1, inplace=True)
+        train_data.drop(["V27"], axis=1, inplace=True)
+        test_data.drop(["V27"], axis=1, inplace=True)
 
         train_data_x = train_data.drop(['target'], axis=1)
         train_data_y = train_data['target']
+
+        (train_data_x, test_data) = NormalizeData(train_data_x, test_data)
 
         X_train, X_test, Y_train, Y_test = train_test_split(train_data_x, train_data_y, test_size=0.2, random_state=40)
         params = {'learning_rate': 0.03,
