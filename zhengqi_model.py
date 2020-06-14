@@ -29,10 +29,10 @@ def main():
                    本地测试(mse)         线上score        时间 
     False True  0.10895188423219443      0.1682     2019.1.19 20:00
     True  True  0.11475080628985444      0.1585     2019.1.20 20:00
-    True  False 0.09424565768574228      0.1373     2019.1.21 20:00
-    False False 0.08918637637655073
+    True  False 0.09424565768574228      0.1373     2019.1.21 12:00
+    False False 0.08918637637655073      0.1337     2019.1.21 20:00
     """
-    if True:
+    if False:
         train_data.drop(['V5', 'V17', 'V28', 'V22', 'V11', 'V9'], axis=1, inplace=True)
         test_data.drop(['V5', 'V17', 'V28', 'V22', 'V11', 'V9'], axis=1, inplace=True)
 
