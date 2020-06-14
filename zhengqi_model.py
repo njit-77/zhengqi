@@ -29,7 +29,7 @@ def main():
                    本地测试(mse)         线上score        时间 
     False True  0.10895188423219443      0.1682     2019.1.19 20:00
     True  True  0.11475080628985444      0.1585     2019.1.20 20:00
-    True  False 0.09424565768574228     
+    True  False 0.09424565768574228      0.1373     2019.1.21 20:00
     False False 0.08918637637655073
     """
     if True:
@@ -39,7 +39,7 @@ def main():
     train_data_x = train_data.drop(['target'], axis=1)
     train_data_y = train_data['target']
 
-    if True:
+    if False:
         pca1 = pca.PCA(n_components=0.95)
         pca1.fit(train_data_x)
         train_data_x = pca1.transform(train_data_x)
